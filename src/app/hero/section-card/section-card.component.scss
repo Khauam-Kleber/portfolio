@@ -1,0 +1,184 @@
+:host {
+  display: block;
+}
+
+.section-card {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--hero-card-height);
+  display: flex;
+  background: #f6f0e4;
+  border-top: 1px solid rgb(58 70 37 / 20%);
+  z-index: 4;
+  overflow: hidden;
+}
+
+.section-card__col {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 24px 32px;
+  overflow-y: auto;
+  border-right: 1px solid rgb(58 70 37 / 14%);
+}
+
+// alinha a 1ª linha de conteúdo das colunas B/C com `.section-card__intro`, que fica ao
+// lado do título na coluna A (mais baixa que um kicker solto, por causa do leading do título)
+.section-card__col--b,
+.section-card__col--c {
+  padding-top: 36px;
+}
+
+.section-card__col--c {
+  border-right: none;
+  display: flex;
+  flex-direction: column;
+}
+
+// career tem só 2 grupos naturais de conteúdo (trajetória atual/anterior): a coluna A
+// ganha o espaço que seria da coluna B, a coluna C segue como a segunda metade do conteúdo
+.section-card--duo .section-card__col--a {
+  flex: 2 1 0;
+}
+
+.section-card__kicker {
+  margin: 0 0 6px;
+  font: 400 12px/1 'Karla', sans-serif;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(58 70 37 / 50%);
+}
+
+// título ao lado do texto (não empilhado em cima), pra não empurrar o conteúdo pra baixo
+.section-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.section-card__title {
+  flex: none;
+  margin: 0;
+  font: 300 clamp(1.6rem, 3.4vw, 2.1rem) / 1.12 'Cormorant Garamond', serif;
+  color: var(--color-ink);
+}
+
+.section-card__intro {
+  flex: 1 1 auto;
+  min-width: 0;
+  // compensa o leading do título (fonte grande) pra alinhar visualmente com o kicker
+  margin-top: -6px;
+}
+
+.section-card__meta {
+  margin: 0 0 8px;
+  font: 400 14px/1.4 'Karla', sans-serif;
+  letter-spacing: 0.03em;
+  color: rgb(58 70 37 / 70%);
+}
+
+.section-card__body {
+  margin: 0;
+  max-width: 52ch;
+  font: 400 15px/1.6 'Karla', sans-serif;
+  color: rgb(58 70 37 / 85%);
+}
+
+.section-card__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: 400 14px/1.55 'Karla', sans-serif;
+  color: rgb(58 70 37 / 85%);
+}
+
+.section-card__list li {
+  position: relative;
+  padding-left: 16px;
+  margin-bottom: 6px;
+}
+
+.section-card__list li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--color-gold);
+}
+
+.stack-meters {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  color: var(--color-ink);
+  font: 400 14px/1 'Karla', sans-serif;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.section-card__link:hover {
+  color: var(--color-gold);
+}
+
+.section-card__link-icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+}
+
+// tags circulares tipo carimbo de espécime, ecoando o selo dourado usado no menu/toggle
+.social-links {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.social-links__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.social-links__icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  padding: 7px;
+  box-sizing: content-box;
+  border: 1px solid rgb(58 70 37 / 30%);
+  border-radius: 50%;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+
+.social-links__label {
+  font: 400 14px/1 'Karla', sans-serif;
+  letter-spacing: 0.03em;
+}
+
+.social-links__link:hover .social-links__icon {
+  border-color: var(--color-gold);
+  background: var(--color-gold);
+}
+
+.social-links__link:hover .social-links__label {
+  color: var(--color-gold);
+}
+
+@media (max-width: 900px) {
+  .section-card {
+    display: none;
+  }
+}

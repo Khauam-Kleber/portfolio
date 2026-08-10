@@ -1,0 +1,140 @@
+<div class="section-card" [class.section-card--duo]="isDuo()">
+  <div class="section-card__col section-card__col--a">
+    <p class="section-card__kicker">{{ indexLabel() }}</p>
+
+    <div class="section-card__header">
+      <h2 class="section-card__title">{{ translations()[sectionKey()].title }}</h2>
+
+      <div class="section-card__intro">
+        @switch (sectionKey()) {
+          @case ('about') {
+            <p class="section-card__body">{{ translations().about.bio }}</p>
+          }
+          @case ('career') {
+            <p class="section-card__meta">
+              {{ translations().career.current.company }} · {{ translations().career.current.period }}
+            </p>
+            <ul class="section-card__list">
+              @for (item of translations().career.current.highlights; track $index) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          }
+          @case ('stack') {
+            <p class="section-card__meta">{{ translations().stack.core.label }}</p>
+            <div class="stack-meters">
+              @for (item of translations().stack.core.items; track $index) {
+                <app-skill-meter [label]="item.name" [years]="item.years" />
+              }
+            </div>
+          }
+          @case ('education') {
+            <p class="section-card__meta">
+              {{ translations().education.postgraduate.title }} · {{ translations().education.postgraduate.meta }}
+            </p>
+            <p class="section-card__body">{{ translations().education.postgraduate.institution }}</p>
+          }
+        }
+      </div>
+    </div>
+  </div>
+
+  @if (!isDuo()) {
+    <div class="section-card__col section-card__col--b">
+      @switch (sectionKey()) {
+        @case ('about') {
+          <p class="section-card__kicker">{{ translations().about.contactKicker }}</p>
+          <p class="section-card__meta">{{ translations().about.phone }}</p>
+          <p class="section-card__meta">{{ translations().about.email }}</p>
+          <a class="section-card__link" [href]="translations().about.cvHref" target="_blank" rel="noopener">
+            <svg class="section-card__link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+              <path d="M7 11l5 5l5 -5" />
+              <path d="M12 4l0 12" />
+            </svg>
+            {{ translations().about.cvLabel }}
+          </a>
+        }
+        @case ('stack') {
+          <p class="section-card__meta">{{ translations().stack.extended.label }}</p>
+          <div class="stack-meters">
+            @for (item of translations().stack.extended.items; track $index) {
+              <app-skill-meter [label]="item.name" [years]="item.years" />
+            }
+          </div>
+        }
+        @case ('education') {
+          <p class="section-card__kicker">{{ translations().education.graduation.title }}</p>
+          <p class="section-card__meta">
+            {{ translations().education.graduation.institution }} · {{ translations().education.graduation.meta }}
+          </p>
+        }
+      }
+    </div>
+  }
+
+  <div class="section-card__col section-card__col--c">
+    @switch (sectionKey()) {
+      @case ('about') {
+        <p class="section-card__kicker">{{ translations().about.socialKicker }}</p>
+        <ul class="social-links">
+          @for (link of socialLinks; track link.key) {
+            <li>
+              <a class="social-links__link" [href]="link.href" target="_blank" rel="noopener" [attr.aria-label]="link.label">
+                @switch (link.key) {
+                  @case ('whatsapp') {
+                    <svg class="social-links__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" />
+                      <path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1" />
+                    </svg>
+                  }
+                  @case ('linkedin') {
+                    <svg class="social-links__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3.5" y="3.5" width="17" height="17" rx="2.5" />
+                      <path d="M8 11v5" />
+                      <path d="M8 8v.01" />
+                      <path d="M12 16v-5" />
+                      <path d="M12 13a2 2 0 0 1 4 0v3" />
+                    </svg>
+                  }
+                  @case ('github') {
+                    <svg class="social-links__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.4c0 -1 .1 -1.4 -.5 -2c2.7 -.3 5.5 -1.3 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12 12 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.7 2.8 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.4" />
+                    </svg>
+                  }
+                }
+                <span class="social-links__label">{{ link.label }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+      @case ('career') {
+        <p class="section-card__meta">
+          {{ translations().career.previous.company }} · {{ translations().career.previous.period }}
+        </p>
+        <ul class="section-card__list">
+          @for (item of translations().career.previous.highlights; track $index) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+      }
+      @case ('stack') {
+        <p class="section-card__meta">{{ translations().stack.ai.label }}</p>
+        <div class="stack-meters">
+          @for (item of translations().stack.ai.items; track $index) {
+            <app-skill-meter [label]="item.name" [years]="item.years" />
+          }
+        </div>
+      }
+      @case ('education') {
+        <p class="section-card__kicker">{{ translations().education.languagesKicker }}</p>
+        <p class="section-card__meta">
+          @for (lang of translations().education.languages; track $index; let last = $last) {
+            {{ lang.name }} ({{ lang.level }}){{ last ? '' : ' · ' }}
+          }
+        </p>
+      }
+    }
+  </div>
+</div>

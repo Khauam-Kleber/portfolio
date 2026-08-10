@@ -1,0 +1,13 @@
+<nav class="hero-nav" aria-label="navegação principal">
+  @for (item of items(); track item.key; let i = $index) {
+    <button
+      type="button"
+      class="hero-nav__item"
+      [class]="'hero-nav__item--' + item.navPosition"
+      [class.hero-nav__item--active]="i === activeIndex()"
+    >
+      {{ item.label }}
+      <span class="hero-nav__index">{{ item.index }}</span>
+    </button>
+  }
+</nav>

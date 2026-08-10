@@ -1,0 +1,39 @@
+:host {
+  display: block;
+}
+
+.language-toggle {
+  display: inline-flex;
+  border: 1px solid rgb(58 70 37 / 25%);
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgb(253 250 243 / 85%);
+}
+
+.language-toggle__item {
+  padding: 4px 12px;
+  border: none;
+  background: transparent;
+  color: rgb(58 70 37 / 60%);
+  font: 400 11px/1.4 'Karla', sans-serif;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
+}
+
+.language-toggle__item:hover {
+  color: var(--color-ink);
+}
+
+.language-toggle__item--active {
+  background: var(--color-gold);
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+.language-toggle__item:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: -2px;
+}

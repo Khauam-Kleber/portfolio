@@ -1,0 +1,129 @@
+:host {
+  display: contents;
+}
+
+.hero-nav {
+  pointer-events: none;
+}
+
+.hero-nav__item {
+  pointer-events: auto;
+  position: fixed;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.8rem 1.25rem;
+  border: 1px solid rgba(58, 70, 37, 0.22);
+  border-radius: 4px;
+  background: rgb(233 223 215 / 72%);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 12px rgb(58 70 37 / 14%);
+  color: var(--color-ink);
+  font: 400 0.95rem/1 'Karla', system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    transform 0.2s ease;
+  z-index: 6;
+}
+
+.hero-nav__item:hover,
+.hero-nav__item:focus-visible,
+.hero-nav__item--active {
+  background: var(--color-gold);
+}
+
+.hero-nav__item:hover,
+.hero-nav__item:focus-visible {
+  transform: scale(1.04);
+}
+
+.hero-nav__item:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.hero-nav__index {
+  font-size: 0.7rem;
+  opacity: 0.55;
+}
+
+.hero-nav__item--top-left {
+  left: 9%;
+  top: 30%;
+  transform: translate(-50%, -50%) rotate(-3deg);
+}
+
+.hero-nav__item--mid-left {
+  left: 17%;
+  top: 44%;
+  transform: translate(-50%, -50%) rotate(2deg);
+}
+
+.hero-nav__item--top-right {
+  right: 17%;
+  top: 30%;
+  transform: translate(50%, -50%) rotate(3deg);
+}
+
+.hero-nav__item--mid-right {
+  right: 9%;
+  top: 44%;
+  transform: translate(50%, -50%) rotate(-2deg);
+}
+
+.hero-nav__item--top-left:hover,
+.hero-nav__item--top-left:focus-visible {
+  transform: translate(-50%, -50%) rotate(-3deg) scale(1.04);
+}
+
+.hero-nav__item--mid-left:hover,
+.hero-nav__item--mid-left:focus-visible {
+  transform: translate(-50%, -50%) rotate(2deg) scale(1.04);
+}
+
+.hero-nav__item--top-right:hover,
+.hero-nav__item--top-right:focus-visible {
+  transform: translate(50%, -50%) rotate(3deg) scale(1.04);
+}
+
+.hero-nav__item--mid-right:hover,
+.hero-nav__item--mid-right:focus-visible {
+  transform: translate(50%, -50%) rotate(-2deg) scale(1.04);
+}
+
+// telas estreitas: a margarida fica menor e os botões espalhados por cima dela não
+// cabem sem sobrepor pétalas importantes — empilha como menu fixo no rodapé.
+@media (max-width: 640px) {
+  .hero-nav__item {
+    position: fixed;
+    left: auto;
+    right: auto;
+    top: auto;
+    transform: none !important;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  .hero-nav__item--top-left {
+    left: 4%;
+    bottom: 4%;
+  }
+
+  .hero-nav__item--mid-left {
+    left: 4%;
+    bottom: calc(4% + 3.2rem);
+  }
+
+  .hero-nav__item--top-right {
+    right: 4%;
+    bottom: 4%;
+  }
+
+  .hero-nav__item--mid-right {
+    right: 4%;
+    bottom: calc(4% + 3.2rem);
+  }
+}

@@ -1,0 +1,7 @@
+<div class="skill-meter">
+  <span class="skill-meter__label">{{ label() }}</span>
+  <span class="skill-meter__track">
+    <span class="skill-meter__dot" [style.left.%]="fillPercent()"></span>
+  </span>
+  <span class="skill-meter__years">{{ yearsLabel() }}</span>
+</div>

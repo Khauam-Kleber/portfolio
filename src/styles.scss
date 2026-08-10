@@ -1,1 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+  // paleta extraída do asset do hero (margarida) — reutilizar em todas as seções
+  --color-gold: #f5b94e; // dourado do miolo, usado em hover/destaque
+  --color-petal: #e9dfd7; // branco creme da pétala
+  --color-sky: #8ea7d3; // azul do céu de fundo
+  --color-ink: #3a4625; // verde escuro do campo, usado como cor de texto
+
+  // altura da banda de card fixa no rodapé do hero — compartilhada entre HeroComponent
+  // (pra não sobrepor os textos de canto) e SectionCardComponent (sua própria altura)
+  // 20% maior que o valor original (clamp(160px, 22vh, 220px))
+  --hero-card-height: clamp(192px, 26.4vh, 264px);
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: 'Karla', system-ui, sans-serif;
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+

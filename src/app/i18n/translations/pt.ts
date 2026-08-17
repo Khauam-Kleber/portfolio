@@ -2,12 +2,6 @@ import type { Translations } from './translations.model';
 
 export const PT_TRANSLATIONS: Translations = {
   hero: {
-    eyebrow: 'herbarium · prancha 01',
-    hintLine1: 'role — o vento leva',
-    hintLine2: 'uma pétala por seção',
-    specimenSpecies: 'Leucanthemum vulgare',
-    specimenRole: 'desenvolvedor front-end sênior',
-    specimenLocation: 'Curitiba · PR · desde 2017',
     sectionIndexPrefix: 'n.º',
   },
   languageToggle: {
@@ -55,7 +49,7 @@ export const PT_TRANSLATIONS: Translations = {
     core: {
       label: 'front-end & dados',
       items: [
-        { name: 'Angular 6-16', years: 7 },
+        { name: 'Angular 6-22', years: 7 },
         { name: 'RxJS', years: 7 },
         { name: 'Signals', years: 2 },
         { name: 'HTML5', years: 7 },
@@ -102,7 +96,7 @@ export const PT_TRANSLATIONS: Translations = {
     title: 'Formação',
     postgraduate: {
       title: 'Engenharia de Software com IA Aplicada',
-      institution: 'instituição a confirmar',
+      institution: 'UNIPDS',
       meta: 'cursando',
     },
     graduation: {

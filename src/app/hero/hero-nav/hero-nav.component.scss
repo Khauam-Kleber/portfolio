@@ -50,6 +50,10 @@
   opacity: 0.55;
 }
 
+.hero-nav__number {
+  display: none;
+}
+
 .hero-nav__item--top-left {
   left: 9%;
   top: 30%;
@@ -94,36 +98,167 @@
   transform: translate(50%, -50%) rotate(-2deg) scale(1.04);
 }
 
-// telas estreitas: a margarida fica menor e os botões espalhados por cima dela não
-// cabem sem sobrepor pétalas importantes — empilha como menu fixo no rodapé.
-@media (max-width: 640px) {
+// telas estreitas: a margarida fica menor e os 4 rótulos espalhados nos cantos não cabem
+// mais — vira uma trilha vertical de círculos numerados na borda direita (rótulo por
+// extenso continua no DOM pra leitor de tela, só fica visualmente escondido)
+@media (max-width: 900px) {
+  // trilha pontilhada ligando os 4 círculos — .hero-nav é um <nav> normal (só o :host do
+  // componente é display:contents), então aceita pseudo-elemento normalmente
+  .hero-nav::before {
+    content: '';
+    position: fixed;
+    top: calc(10vh + 17px);
+    right: 33px;
+    width: 0;
+    height: 30vh;
+    border-left: 1px dashed rgb(58 70 37 / 32%);
+    z-index: 5;
+  }
+
   .hero-nav__item {
     position: fixed;
     left: auto;
-    right: auto;
     top: auto;
+    right: 16px;
     transform: none !important;
-    padding: 0.6rem 0.9rem;
-    font-size: 0.85rem;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
   }
 
+  // ficam dentro da região da foto (que termina onde a "ficha" começa, ver
+  // --hero-card-height em styles.scss), nunca sobre o painel inferior — e afastados dela
+  // (ver .hero-nav::before) pra não colar na borda direita da imagem, agora mais estreita
   .hero-nav__item--top-left {
-    left: 4%;
-    bottom: 4%;
+    top: 10vh;
   }
 
   .hero-nav__item--mid-left {
-    left: 4%;
-    bottom: calc(4% + 3.2rem);
+    top: 20vh;
   }
 
   .hero-nav__item--top-right {
-    right: 4%;
-    bottom: 4%;
+    top: 30vh;
   }
 
   .hero-nav__item--mid-right {
-    right: 4%;
-    bottom: calc(4% + 3.2rem);
+    top: 40vh;
+  }
+
+  .hero-nav__item:hover,
+  .hero-nav__item:focus-visible {
+    transform: scale(1.1) !important;
+  }
+
+  .hero-nav__item--active {
+    transform: scale(1.15) !important;
+  }
+
+  .hero-nav__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .hero-nav__index {
+    display: none;
+  }
+
+  .hero-nav__number {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 1;
+  }
+}
+
+// desktop: os 4 botões saem dos cantos espalhados e viram uma fileira única, pendurada
+// por um fio horizontal (ver ::before) — cada botão tem seu próprio pino (ver
+// .hero-nav__item::before) e um leve torto alternado, como se balançasse ali.
+@media (min-width: 901px) {
+  .hero-nav {
+    grid-area: nav;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 18px 4% 0;
+  }
+
+  // o fio fica exatamente na borda superior dos botões (mesma referência: topo da
+  // padding-box de .hero-nav) — o pino de cada botão (::before, centrado nessa borda)
+  // cai em cima dele, não abaixo
+  .hero-nav::before {
+    content: '';
+    position: absolute;
+    left: 1%;
+    right: 1%;
+    top: 18px;
+    border-top: 1px solid rgb(58 70 37 / 30%);
+  }
+
+  .hero-nav__item,
+  .hero-nav__item--top-left,
+  .hero-nav__item--mid-left,
+  .hero-nav__item--top-right,
+  .hero-nav__item--mid-right {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    margin-top: 0;
+    transform: rotate(-1.8deg);
+  }
+
+  .hero-nav__item:nth-child(even),
+  .hero-nav__item--top-right,
+  .hero-nav__item--mid-right {
+    transform: rotate(1.6deg);
+  }
+
+  .hero-nav__item::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -4px;
+    width: 8px;
+    height: 8px;
+    margin-left: -4px;
+    border-radius: 50%;
+    background: var(--color-ink);
+    opacity: 0.55;
+    transition:
+      background 0.3s ease,
+      opacity 0.3s ease;
+  }
+
+  .hero-nav__item--active::before {
+    background: var(--color-gold);
+    opacity: 1;
+  }
+
+  .hero-nav__item:hover,
+  .hero-nav__item:focus-visible,
+  .hero-nav__item--top-left:hover,
+  .hero-nav__item--top-left:focus-visible,
+  .hero-nav__item--mid-left:hover,
+  .hero-nav__item--mid-left:focus-visible,
+  .hero-nav__item--top-right:hover,
+  .hero-nav__item--top-right:focus-visible,
+  .hero-nav__item--mid-right:hover,
+  .hero-nav__item--mid-right:focus-visible {
+    transform: rotate(0deg) scale(1.04);
+  }
+
+  .hero-nav__item--active {
+    transform: rotate(0deg) translateY(-3px);
   }
 }

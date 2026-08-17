@@ -44,3 +44,30 @@
   color: rgb(58 70 37 / 45%);
   white-space: nowrap;
 }
+
+// +3px nos textos, acompanhando o resto dos quadros no desktop (ver section-card.component.scss)
+@media (min-width: 901px) {
+  // padding vertical menor compensa a linha mais alta da fonte maior — sem isso, colunas
+  // com muitas linhas (stack) estouram a altura fixa de .hero__stage
+  .skill-meter {
+    gap: 8px;
+    padding: 2px 0;
+  }
+
+  // rótulo mais estreito que no mobile (132px não cabia mais ao lado da régua nos
+  // quadros estreitos do "mural suspenso" — sobrava quase nada pra .skill-meter__track
+  // crescer, a régua sumia). Nomes longos truncam com reticências (ver overflow acima).
+  .skill-meter__label {
+    flex-basis: 96px;
+    font-size: 16px;
+  }
+
+  .skill-meter__track {
+    // garante uma régua sempre visível mesmo nos quadros mais estreitos (cardA/cardC)
+    min-width: 36px;
+  }
+
+  .skill-meter__years {
+    font-size: 15px;
+  }
+}

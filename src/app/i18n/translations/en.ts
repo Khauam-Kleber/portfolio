@@ -2,12 +2,6 @@ import type { Translations } from './translations.model';
 
 export const EN_TRANSLATIONS: Translations = {
   hero: {
-    eyebrow: 'herbarium · plate 01',
-    hintLine1: 'scroll — the wind carries',
-    hintLine2: 'one petal per section',
-    specimenSpecies: 'Leucanthemum vulgare',
-    specimenRole: 'senior front-end developer',
-    specimenLocation: 'Curitiba, Brazil · since 2017',
     sectionIndexPrefix: 'No.',
   },
   languageToggle: {
@@ -55,7 +49,7 @@ export const EN_TRANSLATIONS: Translations = {
     core: {
       label: 'front-end & data',
       items: [
-        { name: 'Angular 6-16', years: 7 },
+        { name: 'Angular 6-22', years: 7 },
         { name: 'RxJS', years: 7 },
         { name: 'Signals', years: 2 },
         { name: 'HTML5', years: 7 },

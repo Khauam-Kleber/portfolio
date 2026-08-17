@@ -5,9 +5,11 @@
       class="hero-nav__item"
       [class]="'hero-nav__item--' + item.navPosition"
       [class.hero-nav__item--active]="i === activeIndex()"
+      (click)="sectionSelect.emit(i)"
     >
-      {{ item.label }}
+      <span class="hero-nav__label">{{ item.label }}</span>
       <span class="hero-nav__index">{{ item.index }}</span>
+      <span class="hero-nav__number" aria-hidden="true">{{ item.number }}</span>
     </button>
   }
 </nav>

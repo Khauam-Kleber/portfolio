@@ -37,3 +37,10 @@
   outline: 2px solid var(--color-ink);
   outline-offset: -2px;
 }
+
+@media (max-width: 900px) {
+  .language-toggle__item {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+}

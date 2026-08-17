@@ -1,10 +1,4 @@
 export interface HeroChrome {
-  readonly eyebrow: string;
-  readonly hintLine1: string;
-  readonly hintLine2: string;
-  readonly specimenSpecies: string;
-  readonly specimenRole: string;
-  readonly specimenLocation: string;
   readonly sectionIndexPrefix: string; // "n.º" / "No."
 }
 

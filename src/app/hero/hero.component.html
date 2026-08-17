@@ -1,15 +1,8 @@
 <div class="hero__stage">
-  <p class="hero__eyebrow">{{ translations().hero.eyebrow }}</p>
-
   <div class="hero__top-right">
     <app-language-toggle />
     <h1 class="hero__signature">Khauam Kleber</h1>
   </div>
-
-  <span class="hero__guide hero__guide--a"></span>
-  <span class="hero__guide hero__guide--b"></span>
-  <span class="hero__guide hero__guide--c"></span>
-  <span class="hero__guide hero__guide--d"></span>
 
   <div class="hero__frame">
     <canvas #canvas class="hero__canvas" aria-hidden="true"></canvas>
@@ -17,17 +10,9 @@
     <span class="hero__tape hero__tape--b"></span>
   </div>
 
-  <app-hero-nav [activeIndex]="activeStep()" />
+  <app-hero-nav [activeIndex]="activeStep()" (sectionSelect)="goToStep($event)" />
 
   <app-section-card [sectionKey]="activeSectionKey()" />
-
-  <div class="hero__specimen">
-    <p class="hero__specimen-name"><em>{{ translations().hero.specimenSpecies }}</em></p>
-    <p>{{ translations().hero.specimenRole }}</p>
-    <p>{{ translations().hero.specimenLocation }}</p>
-  </div>
-
-  <p class="hero__hint">{{ translations().hero.hintLine1 }}<br />{{ translations().hero.hintLine2 }}</p>
 </div>
 
 <!-- distância de scroll que "esfrega" a animação do 2º 5 até o fim do vídeo -->

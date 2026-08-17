@@ -13,6 +13,14 @@
   --hero-card-height: clamp(192px, 26.4vh, 264px);
 }
 
+// telas estreitas: a "ficha" vira uma folha inferior mais alta, empilhando o conteúdo das
+// colunas do desktop em vez de dividi-las lado a lado (ver hero-nav e section-card)
+@media (max-width: 900px) {
+  :root {
+    --hero-card-height: 54vh;
+  }
+}
+
 html,
 body {
   margin: 0;

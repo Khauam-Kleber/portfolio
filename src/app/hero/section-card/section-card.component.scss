@@ -23,6 +23,28 @@
   border-right: 1px solid rgb(58 70 37 / 14%);
 }
 
+// no mobile é só uma passagem — o próprio .section-card__col já rola (ver acima). No
+// desktop ele vira a caixa de rolagem de verdade (ver @media min-width:901px), separada
+// da caixa decorada que carrega fio/pino.
+.section-card__col-inner {
+  display: contents;
+}
+
+// no mobile é só uma passagem, igual .section-card__col-inner. No desktop vira o
+// posicionador do pino/fio (ver @media min-width:901px) — precisa ficar FORA do elemento
+// que balança (.section-card__col tem a animation), não dentro, senão volta o problema.
+.section-card__col-wrap {
+  display: contents;
+}
+
+// fio + pino do "quadro pendurado" (ver @media min-width:901px) — elementos reais, não
+// ::before/::after, pra não depender de pseudo-elemento renderizar em cima de um
+// ancestral com overflow/position próprios. Escondidos por padrão (só existem no desktop).
+.section-card__pin-string,
+.section-card__pin-dot {
+  display: none;
+}
+
 // alinha a 1ª linha de conteúdo das colunas B/C com `.section-card__intro`, que fica ao
 // lado do título na coluna A (mais baixa que um kicker solto, por causa do leading do título)
 .section-card__col--b,
@@ -177,8 +199,246 @@
   color: var(--color-gold);
 }
 
+// mobile: a "ficha" de 3 colunas vira uma folha inferior de rolagem única, empilhando os
+// mesmos blocos (A, B se houver, C) que no desktop ficam lado a lado — mesmo dado, mesma
+// separação por bloco, só a disposição espacial muda.
 @media (max-width: 900px) {
   .section-card {
-    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .section-card__col {
+    flex: none;
+    padding: 16px 20px;
+    overflow-y: visible;
+    border-right: none;
+    border-bottom: 1px solid rgb(58 70 37 / 14%);
+  }
+
+  .section-card__col--b,
+  .section-card__col--c {
+    padding-top: 16px;
+  }
+
+  .section-card__col--c {
+    border-bottom: none;
+  }
+
+  .section-card--duo .section-card__col--a {
+    flex: none;
+  }
+
+  .section-card__header {
+    flex-direction: column;
+    // sem isso, herda align-items:flex-start do desktop — que numa coluna vira "encolher
+    // pro conteúdo" em vez de "esticar", e some com a régua do skill-meter (sem largura
+    // sobrando pra flex:1 1 auto do .skill-meter__track crescer)
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .section-card__intro {
+    margin-top: 0;
+  }
+}
+
+// desktop: "mural suspenso" — cada coluna vira um quadro independente pendurado por um fio
+// (pino + linha em ::before/::after) ao redor da moldura da margarida (ver grid-template-areas
+// em hero.component.scss), balançando sozinho como se tivesse vento (ver @keyframes ao final).
+@media (min-width: 901px) {
+  :host {
+    display: contents;
+  }
+
+  .section-card {
+    display: contents;
+  }
+
+  // este é o elemento que balança (animation). O pino/fio NÃO ficam dentro dele — ver
+  // .section-card__col-wrap logo abaixo — porque um filho posicionado (absolute, ou
+  // relative+top, tanto faz) dentro de um ancestral com animation+transform ativo não
+  // pintava direito em alguns Chrome/Windows (bug de composição de camada). Isolando o
+  // pino num ancestral SEM animação, position:absolute volta a funcionar normalmente.
+  .section-card__col {
+    flex: none;
+    align-self: start;
+    width: 100%;
+    // zera o padding base (24px 32px, ver topo do arquivo) — aqui ele mora em
+    // .section-card__col-inner (ver abaixo), não neste elemento
+    padding: 0;
+    background: #fdfaf3;
+    border: 1px solid rgb(58 70 37 / 13%);
+    border-right: none;
+    box-shadow: 0 14px 32px rgb(58 70 37 / 16%);
+    animation: cardSwayA 9s ease-in-out infinite;
+    transform-origin: 50% -8%;
+  }
+
+  .section-card__col-inner {
+    display: block;
+    padding: 24px 24px 20px;
+    max-height: calc(100vh - 170px);
+    overflow-y: auto;
+  }
+
+  // o wrap é quem entra na grade (grid-area) e quem ancora o pino/fio — parado, sem
+  // animation/transform, só pra não repetir o bug descrito acima.
+  .section-card__col-wrap {
+    display: block;
+    position: relative;
+  }
+
+  .section-card__col-wrap--a {
+    grid-area: cardA;
+    margin-top: 66px;
+  }
+
+  .section-card__col-wrap--b {
+    grid-area: cardB;
+    justify-self: center;
+    width: min(100%, 560px);
+    margin-top: 44px;
+  }
+
+  .section-card__col-wrap--c {
+    grid-area: cardC;
+    margin-top: 66px;
+  }
+
+  .section-card__col--b {
+    animation-name: cardSwayC;
+    animation-duration: 11s;
+  }
+
+  .section-card__col--c {
+    animation-name: cardSwayB;
+    animation-duration: 10s;
+  }
+
+  // fio + pino: dá a leitura de "quadro pendurado". Elementos reais (ver .html),
+  // position:absolute ancorado no .section-card__col-wrap (position:relative, sem
+  // animation) — não no .section-card__col que balança, ver comentário acima.
+  .section-card__pin-dot {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: -22px;
+    width: 9px;
+    height: 9px;
+    margin-left: -4.5px;
+    border-radius: 50%;
+    background: var(--color-gold);
+    border: 1px solid rgb(58 70 37 / 32%);
+    z-index: 1;
+  }
+
+  .section-card__pin-string {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: -13px;
+    width: 1px;
+    height: 13px;
+    background: rgb(58 70 37 / 35%);
+  }
+
+  .section-card__header {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .section-card__title {
+    font-size: clamp(1.5rem, 2.2vw, 1.9rem);
+  }
+
+  .section-card__intro {
+    margin-top: 0;
+  }
+
+  // conteúdo centralizado dentro do quadro — text-align cobre parágrafos, título, lista
+  // e links (inline); os containers flex (header já tratado acima, social/stack abaixo)
+  // precisam do align-items à parte, já que text-align não afeta o eixo cruzado deles
+  .section-card__col {
+    text-align: center;
+  }
+
+  .section-card__body {
+    margin: 0 auto;
+  }
+
+  // a lista larga com "›" absoluto à esquerda não centraliza bem linha a linha — vira
+  // prefixo inline, assim cada item centraliza como um bloco de texto só
+  .section-card__list li {
+    padding-left: 0;
+  }
+
+  .section-card__list li::before {
+    content: '› ';
+    position: static;
+  }
+
+  // stack-meters fica com align-items:stretch (o padrão) de propósito — cada linha do
+  // medidor precisa da largura cheia pra .skill-meter__track (flex:1 1 auto) calcular a
+  // régua; social-links não precisa de nada aqui porque o link é inline-flex e já
+  // centraliza sozinho via text-align, herdado de .section-card__col acima.
+
+  // +3px em todos os textos dos quadros
+  .section-card__kicker {
+    font-size: 15px;
+  }
+
+  .section-card__meta {
+    font-size: 17px;
+  }
+
+  .section-card__body {
+    font-size: 18px;
+  }
+
+  .section-card__list {
+    font-size: 17px;
+  }
+
+  .section-card__link {
+    font-size: 17px;
+  }
+
+  .social-links__label {
+    font-size: 17px;
+  }
+}
+
+@keyframes cardSwayA {
+  0%,
+  100% {
+    transform: rotate(-2.6deg);
+  }
+
+  50% {
+    transform: rotate(1.4deg);
+  }
+}
+
+@keyframes cardSwayB {
+  0%,
+  100% {
+    transform: rotate(2.2deg);
+  }
+
+  50% {
+    transform: rotate(-1.8deg);
+  }
+}
+
+@keyframes cardSwayC {
+  0%,
+  100% {
+    transform: rotate(-1.6deg);
+  }
+
+  50% {
+    transform: rotate(1.3deg);
   }
 }

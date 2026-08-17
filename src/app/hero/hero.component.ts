@@ -18,9 +18,16 @@ const INTRO_END = timeToFrame(4.4); // abelha pousa
 const IDLE_END = timeToFrame(5.4); // abelha parada, nenhuma pétala caiu ainda
 const SCRUB_END = TOTAL_FRAMES; // fim do vídeo (~15s), última pétala mapeada
 
+// duração do scroll animado ao clicar num botão do menu — de propósito bem devagar, pra
+// dar tempo da animação de pétalas caindo (ligada ao scrollY) ficar visível no trajeto
+const NAV_SCROLL_MS = 1800;
+
 type PlaybackMode = 'intro' | 'idle' | 'scrub';
 
 const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
+
+// ease-in-out-quad
+const easeInOutQuad = (t: number): number => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
 /**
  * Hero animado: a margarida perde pétalas conforme o scroll, dentro da moldura estilo
@@ -38,6 +45,8 @@ const clamp = (value: number, min: number, max: number): number => Math.min(Math
   host: {
     '(window:scroll)': 'onWindowScroll()',
     '(window:resize)': 'onWindowResize()',
+    '(window:wheel)': 'cancelNavScroll()',
+    '(window:touchstart)': 'cancelNavScroll()',
   },
 })
 export class HeroComponent {
@@ -59,6 +68,7 @@ export class HeroComponent {
   private idleDirection: 1 | -1 = -1;
   private playbackTimer: ReturnType<typeof setInterval> | null = null;
   private scrollTicking = false;
+  private navScrollFrame: number | null = null;
 
   constructor() {
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
@@ -85,7 +95,47 @@ export class HeroComponent {
       this.startPlaybackTimer();
     });
 
-    inject(DestroyRef).onDestroy(() => this.stopPlaybackTimer());
+    inject(DestroyRef).onDestroy(() => {
+      this.stopPlaybackTimer();
+      this.cancelNavScroll();
+    });
+  }
+
+  /** Clique num botão do menu: rola devagar até o trecho da seção, com a mesma lógica de
+   *  scroll→frame de sempre — é isso que deixa a queda de pétalas visível no trajeto. */
+  protected goToStep(index: number): void {
+    if (index === this.activeStep()) return;
+
+    const scrubHeight = this.scrubSpaceRef()?.nativeElement.offsetHeight ?? 0;
+    const maxScroll = Math.max(scrubHeight - window.innerHeight, 1);
+    // meio do trecho da seção (não a borda), pra não cair bem em cima do limite com a
+    // seção vizinha por causa de arredondamento
+    const targetProgress = (index + 0.5) / NAV_STEPS;
+    const targetY = clamp(maxScroll * targetProgress, 0, maxScroll);
+
+    this.animateScrollTo(targetY);
+  }
+
+  protected cancelNavScroll(): void {
+    if (this.navScrollFrame !== null) {
+      cancelAnimationFrame(this.navScrollFrame);
+      this.navScrollFrame = null;
+    }
+  }
+
+  private animateScrollTo(targetY: number): void {
+    this.cancelNavScroll();
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    const startTime = performance.now();
+
+    const step = (now: number) => {
+      const t = Math.min((now - startTime) / NAV_SCROLL_MS, 1);
+      window.scrollTo(0, startY + distance * easeInOutQuad(t));
+      this.navScrollFrame = t < 1 ? requestAnimationFrame(step) : null;
+    };
+
+    this.navScrollFrame = requestAnimationFrame(step);
   }
 
   protected onWindowScroll(): void {

@@ -20,17 +20,6 @@
   pointer-events: none;
 }
 
-.hero__eyebrow {
-  position: absolute;
-  left: 40px;
-  top: 30px;
-  margin: 0;
-  font: 400 12px/1 'Karla', sans-serif;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: rgb(58 70 37 / 55%);
-}
-
 .hero__top-right {
   position: absolute;
   right: 40px;
@@ -44,33 +33,6 @@
   margin: 0;
   font: 400 30px/1 'Caveat', cursive;
   color: var(--color-ink);
-}
-
-.hero__guide {
-  position: absolute;
-  top: 0;
-  width: 1px;
-  background: rgb(58 70 37 / 30%);
-}
-
-.hero__guide--a {
-  left: 9%;
-  height: 30%;
-}
-
-.hero__guide--b {
-  left: 17%;
-  height: 44%;
-}
-
-.hero__guide--c {
-  right: 17%;
-  height: 30%;
-}
-
-.hero__guide--d {
-  right: 9%;
-  height: 44%;
 }
 
 .hero__frame {
@@ -114,58 +76,104 @@
   transform: rotate(-24deg);
 }
 
-.hero__specimen {
-  position: absolute;
-  left: 40px;
-  bottom: calc(var(--hero-card-height) + 26px);
-  width: 230px;
-  margin: 0;
-  border-top: 1px solid rgb(58 70 37 / 30%);
-  padding-top: 12px;
-  font: 400 12.5px/1.55 'Karla', sans-serif;
-  color: rgb(58 70 37 / 75%);
-}
-
-.hero__specimen p {
-  margin: 0;
-}
-
-.hero__specimen-name em {
-  font-style: italic;
-}
-
-.hero__hint {
-  position: absolute;
-  right: 40px;
-  bottom: calc(var(--hero-card-height) + 26px);
-  margin: 0;
-  text-align: right;
-  font: 400 21px/1.25 'Caveat', cursive;
-  color: rgb(58 70 37 / 80%);
-}
-
-@media (max-width: 640px) {
-  .hero__guide {
-    display: none;
-  }
-
-  .hero__eyebrow {
-    font-size: 0.7rem;
-    left: 20px;
-  }
-
+// mobile: a moldura do vídeo sai do posicionamento absoluto (pensado pro espaço largo ao
+// redor da margarida no desktop) e passa a fluir em coluna, centralizada, acima da "ficha"
+// (ver section-card mobile). app-hero-nav e
+// app-section-card têm posicionamento fixed próprio: como host vira parte do fluxo, mas
+// sem conteúdo em fluxo dentro dele, colapsam a 0 altura e não atrapalham.
+@media (max-width: 900px) {
   .hero__top-right {
-    right: 20px;
-    top: 18px;
-    gap: 8px;
+    right: 18px;
+    top: 14px;
+    gap: 6px;
   }
 
   .hero__signature {
-    font-size: 1.3rem;
+    font-size: 1.05rem;
   }
 
-  .hero__specimen,
-  .hero__hint {
-    display: none;
+  .hero__stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    // menos folga à esquerda (a foto fica coladinha nela) e mais à direita, reservada
+    // pra trilha de navegação numerada — não fica centralizada no viewport inteiro
+    padding: 52px 58px calc(var(--hero-card-height) + 6px) 14px;
+    box-sizing: border-box;
+  }
+
+  .hero__frame {
+    // continua `position` (não `static`): a fita nos cantos é absoluta e usa a moldura
+    // como referência — sem isso ela passa a se posicionar em relação à `.hero__stage`
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: rotate(-1.6deg);
+    padding: 8px;
+  }
+
+  // vertical (não a horizontal do desktop): mesma técnica de "cover" centralizado do
+  // canvas (ver drawFrame em hero.component.ts), só recorta as laterais do vídeo
+  .hero__canvas {
+    // 9/10 em vez de 3/4 (0.9 = 0.75 × 1.2): mesma altura, só a largura cresce ~20%
+    aspect-ratio: 9 / 10;
+    // ~20% maior que antes (30vh/148px) nos dois limites do min(), pra crescer de forma
+    // consistente tanto em telas altas (limitadas pelo vh) quanto baixas (limitadas pelo calc)
+    height: min(36vh, calc(100vh - var(--hero-card-height) - 108px));
+    width: auto;
+  }
+
+  .hero__tape {
+    width: 60px;
+    height: 16px;
+  }
+
+  .hero__tape--a {
+    left: -18px;
+    top: -10px;
+  }
+
+  .hero__tape--b {
+    right: -18px;
+    bottom: -8px;
+  }
+}
+
+// desktop: o "mural suspenso" — a ficha de 3 colunas vira 3 quadros independentes
+// dispostos ao redor da moldura da margarida, cada um "pendurado" por um fio (ver
+// ::before/::after em section-card.component.scss) e balançando como se tivesse vento.
+// A grade abaixo é a origem única desse layout: hero-nav e section-card só participam
+// dela porque seus :host e wrapper viram `display:contents` neste mesmo breakpoint
+// (ver hero-nav.component.scss e section-card.component.scss).
+@media (min-width: 901px) {
+  .hero__stage {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.86fr) minmax(0, 2.1fr) minmax(220px, 0.86fr);
+    grid-template-areas:
+      'nav nav nav'
+      'cardA frame cardC'
+      'cardA cardB cardC';
+    align-content: start;
+    column-gap: clamp(20px, 3vw, 48px);
+    padding: 60px 48px 16px;
+    box-sizing: border-box;
+  }
+
+  .hero__frame {
+    grid-area: frame;
+    position: static;
+    justify-self: center;
+    align-self: start;
+    transform: rotate(-0.7deg);
+    margin-top: 52px;
+  }
+
+  // moldura maior no desktop (a versão mobile mantém seu próprio clamp, ver bloco acima) —
+  // o teto em vh (não px fixo) é de propósito: em telas mais baixas a moldura cede espaço
+  // pro card de baixo (cardB) em vez de estourar a altura fixa de .hero__stage
+  .hero__canvas {
+    height: clamp(240px, 42vh, 460px);
   }
 }

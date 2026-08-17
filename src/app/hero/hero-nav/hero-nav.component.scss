@@ -215,13 +215,23 @@
     right: auto;
     top: auto;
     margin-top: 0;
-    transform: rotate(-1.8deg);
   }
 
-  .hero-nav__item:nth-child(even),
-  .hero-nav__item--top-right,
-  .hero-nav__item--mid-right {
+  // torto e balanço alternam pela ordem real na fileira (nth-child), não mais pelas
+  // classes de canto (--top-right etc., resquício do layout antigo espalhado) — misturar
+  // os dois fazia os botões com essas classes sempre cair no mesmo lado, ignorando a
+  // posição real deles na fileira
+  .hero-nav__item {
+    transform: rotate(-1.8deg);
+    // balanço bem mais leve que o dos cards (ver cardSwayA/B/C em
+    // section-card.component.scss) — aqui é só um sopro, não o vento inteiro
+    animation: navSwayOdd 8s ease-in-out infinite;
+  }
+
+  .hero-nav__item:nth-child(even) {
     transform: rotate(1.6deg);
+    animation-name: navSwayEven;
+    animation-duration: 9s;
   }
 
   .hero-nav__item::before {
@@ -234,6 +244,8 @@
     margin-left: -4px;
     border-radius: 50%;
     background: var(--color-ink);
+    // mesma borda fina dos pinos dos cards (ver .section-card__pin-dot)
+    border: 1px solid rgb(58 70 37 / 32%);
     opacity: 0.55;
     transition:
       background 0.3s ease,
@@ -245,6 +257,8 @@
     opacity: 1;
   }
 
+  // pausa o balanço nesses estados — senão a animação continua ganhando a cascata em
+  // cima do `transform` fixo abaixo e o hover/active nunca aparece de verdade
   .hero-nav__item:hover,
   .hero-nav__item:focus-visible,
   .hero-nav__item--top-left:hover,
@@ -255,10 +269,34 @@
   .hero-nav__item--top-right:focus-visible,
   .hero-nav__item--mid-right:hover,
   .hero-nav__item--mid-right:focus-visible {
+    animation: none;
     transform: rotate(0deg) scale(1.04);
   }
 
   .hero-nav__item--active {
+    animation: none;
     transform: rotate(0deg) translateY(-3px);
+  }
+}
+
+@keyframes navSwayOdd {
+  0%,
+  100% {
+    transform: rotate(-1.8deg);
+  }
+
+  50% {
+    transform: rotate(-0.8deg);
+  }
+}
+
+@keyframes navSwayEven {
+  0%,
+  100% {
+    transform: rotate(1.6deg);
+  }
+
+  50% {
+    transform: rotate(0.6deg);
   }
 }

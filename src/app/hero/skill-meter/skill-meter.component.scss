@@ -52,6 +52,10 @@
   .skill-meter {
     gap: 8px;
     padding: 2px 0;
+    // a régua agora tem largura fixa (ver abaixo), então a linha inteira (rótulo+régua+
+    // anos) pode sobrar espaço no card mais largo (cardB) — centraliza esse bloco em vez
+    // de deixar ele grudado à esquerda (justify-content:flex-start é o padrão do flex)
+    justify-content: center;
   }
 
   // rótulo mais estreito que no mobile (132px não cabia mais ao lado da régua nos
@@ -62,9 +66,11 @@
     font-size: 16px;
   }
 
+  // largura fixa (não mais flex:1 1 auto) — antes a régua esticava até 220px no quadro
+  // largo (cardB) e encolhia quase a zero nos estreitos (cardA/cardC); fixando o tamanho
+  // ela fica igual em todo mundo, o que era o pedido.
   .skill-meter__track {
-    // garante uma régua sempre visível mesmo nos quadros mais estreitos (cardA/cardC)
-    min-width: 36px;
+    flex: 0 0 68px;
   }
 
   .skill-meter__years {

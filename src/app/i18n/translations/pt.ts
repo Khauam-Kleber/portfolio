@@ -62,6 +62,7 @@ export const PT_TRANSLATIONS: Translations = {
         { name: 'Jest', years: 4 },
         { name: 'DuckDB-Wasm', years: 4 },
         { name: 'SpreadJS', years: 4 },
+        { name: 'Otimização de recálculo', years: 4 },
       ],
     },
     extended: {
@@ -70,7 +71,6 @@ export const PT_TRANSLATIONS: Translations = {
         { name: 'APIs REST', years: 7 },
         { name: 'Spring Boot', years: 5 },
         { name: 'Hibernate', years: 3 },
-        { name: 'Docker', years: 3 },
         { name: 'Ionic', years: 3 },
         { name: 'Grails (Java)', years: 2 },
         { name: 'Android Studio', years: 0.3 },
@@ -81,6 +81,7 @@ export const PT_TRANSLATIONS: Translations = {
       items: [
         { name: 'Claude Code', years: 0.2 },
         { name: 'MCP', years: 0.2 },
+        { name: 'Skills', years: 0.2 },
         { name: 'RAG', years: 0.2 },
         { name: 'Rules', years: 0.2 },
         { name: 'Ollama Cloud', years: 0.2 },

@@ -1,0 +1,44 @@
+# Khauam Kleber
+
+> Desenvolvedor Front-End Angular Sênior e Engenheiro de Software com IA Aplicada, com mais
+> de 6 anos de experiência em engenharia de aplicações front-end de alto volume de dados.
+
+Khauam Kleber é desenvolvedor front-end especializado em Angular (versões 6 a 16), atuando
+na definição de arquitetura, padrões técnicos e performance de produtos de software. Vem
+aprofundando de forma ativa o uso de IA aplicada ao desenvolvimento — de agentes de código
+(Claude Code, Devin, Kilo Code) a arquiteturas que integram LLMs como parte do próprio
+produto (MCP, RAG).
+
+## Contato
+
+- E-mail: khauam@hotmail.com
+- Telefone/WhatsApp: +55 41 99620-1262
+- LinkedIn: https://www.linkedin.com/in/khauam/
+- GitHub: https://github.com/Khauam-Kleber
+- Currículo (PT): https://SEU-DOMINIO-AQUI.com/cv/khauam-cardoso-cv-pt.pdf
+- Résumé (EN): https://SEU-DOMINIO-AQUI.com/cv/khauam-cardoso-cv-en.pdf
+
+## Trajetória profissional
+
+- **Accountfy** — Desenvolvedor Front-End Senior (2022 — atualmente). Arquitetura e
+  evolução técnica de módulos estratégicos do produto; otimização de performance em dados
+  pesados (DuckDB-Wasm, SpreadJS, SQL complexo); decisões arquiteturais, code review e apoio
+  técnico à squad.
+- **Quality Planning Sistemas** — FullStack Junior/Pleno (2017 — 2021). Migração de
+  sistemas de Grails 2.5 para Angular 6 + Spring Boot; apps Ionic sobre o mesmo back-end dos
+  sistemas web; requisito, teste, homologação e publicação direto com clientes.
+
+## Stack técnica
+
+- **Front-end & dados**: Angular 6-16, RxJS, Signals, HTML5, SCSS, Git, SQL avançado,
+  Bootstrap, Angular Material, Jest, DuckDB-Wasm, SpreadJS, otimização de recálculo.
+- **Back-end & mobile**: APIs REST, Spring Boot, Hibernate, Ionic, Grails (Java),
+  Android Studio.
+- **IA aplicada**: Claude Code, MCP (Model Context Protocol), Skills, RAG, Ollama Cloud,
+  Kilo Code, Devin.
+
+## Formação
+
+- Engenharia de Software com IA Aplicada — UNIPDS (cursando)
+- Análise e Desenvolvimento de Sistemas — Universidade Tuiuti do Paraná (concluído em 2017)
+- Idiomas: português (nativo), inglês (intermediário)

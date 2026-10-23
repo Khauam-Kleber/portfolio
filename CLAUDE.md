@@ -59,6 +59,26 @@ o seek). Layout de seções inspirado em prancha de herbário científico.
   - Céu: `#8EA7D3`
   - Verde do campo: `#3A4625`
 
+## SEO e acessibilidade para IA
+
+- Sem SSR (decisão mantida — ver acima), então nada dentro de `<app-root>` existe no HTML
+  bruto: crawlers que não executam JavaScript (a maioria dos bots de IA — GPTBot, ClaudeBot,
+  PerplexityBot etc.) veem só a página vazia se dependermos só do Angular.
+- Por isso `src/index.html` tem um bloco estático (`#static-profile`, classe
+  `.visually-hidden` definida em `src/styles.scss`) fora do `<app-root>`: currículo completo
+  em HTML semântico real, sempre presente no documento, invisível para quem vê a versão
+  interativa. É a fonte de verdade pra SEO/IA — ao editar bio, trajetória, stack ou formação
+  nas traduções (`src/app/i18n/translations/*.ts`), replicar a mudança relevante aqui também
+  (e em `public/llms.txt`, que segue a mesma lógica em Markdown).
+- `public/robots.txt`, `public/sitemap.xml` e `public/llms.txt`: canonical/OG/JSON-LD em
+  `index.html` usam `https://SEU-DOMINIO-AQUI.com` como placeholder — trocar pelo domínio
+  real assim que definido (buscar essa string no projeto).
+- `og-image.png` (1200×630) ainda não existe em `public/` — os metatags `og:image` /
+  `twitter:image` apontam pra ele, mas o arquivo precisa ser criado.
+- Palavras-chave alvo: "Desenvolvedor Front-End Angular" e "Engenheiro de Software com IA
+  Angular" — usadas no `<title>`, `<meta description>`, JSON-LD (`jobTitle`) e no `<h1>` do
+  bloco estático (o único `h1` real da página; a "assinatura" visual no hero é `<p>`).
+
 ## Ferramentas disponíveis
 
 - MCP `context7`: documentação atualizada de libs antes de assumir uma API.

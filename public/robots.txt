@@ -1,4 +1,4 @@
-# https://SEU-DOMINIO-AQUI.com/robots.txt
+# https://www.khauam.dev/robots.txt
 
 User-agent: *
 Allow: /
@@ -49,4 +49,4 @@ Allow: /
 User-agent: meta-externalagent
 Allow: /
 
-Sitemap: https://SEU-DOMINIO-AQUI.com/sitemap.xml
+Sitemap: https://www.khauam.dev/sitemap.xml

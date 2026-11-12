@@ -71,8 +71,8 @@ o seek). Layout de seções inspirado em prancha de herbário científico.
   nas traduções (`src/app/i18n/translations/*.ts`), replicar a mudança relevante aqui também
   (e em `public/llms.txt`, que segue a mesma lógica em Markdown).
 - `public/robots.txt`, `public/sitemap.xml` e `public/llms.txt`: canonical/OG/JSON-LD em
-  `index.html` usam `https://SEU-DOMINIO-AQUI.com` como placeholder — trocar pelo domínio
-  real assim que definido (buscar essa string no projeto).
+  `index.html` usam o domínio real `https://www.khauam.dev` (com `www`, é o principal na
+  Vercel) — manter esse mesmo host em todos os arquivos.
 - `og-image.png` (1200×630) ainda não existe em `public/` — os metatags `og:image` /
   `twitter:image` apontam pra ele, mas o arquivo precisa ser criado.
 - Palavras-chave alvo: "Desenvolvedor Front-End Angular" e "Engenheiro de Software com IA

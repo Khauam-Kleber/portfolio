@@ -15,8 +15,8 @@ produto (MCP, RAG).
 - Telefone/WhatsApp: +55 41 99620-1262
 - LinkedIn: https://www.linkedin.com/in/khauam/
 - GitHub: https://github.com/Khauam-Kleber
-- Currículo (PT): https://SEU-DOMINIO-AQUI.com/cv/khauam-cardoso-cv-pt.pdf
-- Résumé (EN): https://SEU-DOMINIO-AQUI.com/cv/khauam-cardoso-cv-en.pdf
+- Currículo (PT): https://www.khauam.dev/cv/khauam-cardoso-cv-pt.pdf
+- Résumé (EN): https://www.khauam.dev/cv/khauam-cardoso-cv-en.pdf
 
 ## Trajetória profissional
 

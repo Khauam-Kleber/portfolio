@@ -271,7 +271,9 @@
     border: 1px solid rgb(58 70 37 / 13%);
     border-right: none;
     box-shadow: 0 14px 32px rgb(58 70 37 / 16%);
-    animation: cardSwayA 9s ease-in-out infinite;
+    --sway-from: -2.6deg;
+    --sway-to: 1.4deg;
+    animation: cardSway 9s ease-in-out infinite;
     transform-origin: 50% -8%;
   }
 
@@ -306,13 +308,21 @@
     margin-top: 66px;
   }
 
+  // os 3 quadros usam o MESMO @keyframes (cardSway), variando só ângulos e duração. Não
+  // trocar por um @keyframes por card com `animation-name` no override: no build de produção
+  // o CSS é minificado (sem o `;` final do bloco) antes do Angular escopar o nome do
+  // keyframe, e dentro de um @media o regex dele engole o `}` e o seletor seguinte — o nome
+  // fica sem prefixo, não casa com o keyframe e o card fica parado. Só aparece em produção
+  // (no `ng s` o CSS não é minificado).
   .section-card__col--b {
-    animation-name: cardSwayC;
+    --sway-from: -1.6deg;
+    --sway-to: 1.3deg;
     animation-duration: 11s;
   }
 
   .section-card__col--c {
-    animation-name: cardSwayB;
+    --sway-from: 2.2deg;
+    --sway-to: -1.8deg;
     animation-duration: 10s;
   }
 
@@ -410,35 +420,13 @@
   }
 }
 
-@keyframes cardSwayA {
+@keyframes cardSway {
   0%,
   100% {
-    transform: rotate(-2.6deg);
+    transform: rotate(var(--sway-from));
   }
 
   50% {
-    transform: rotate(1.4deg);
-  }
-}
-
-@keyframes cardSwayB {
-  0%,
-  100% {
-    transform: rotate(2.2deg);
-  }
-
-  50% {
-    transform: rotate(-1.8deg);
-  }
-}
-
-@keyframes cardSwayC {
-  0%,
-  100% {
-    transform: rotate(-1.6deg);
-  }
-
-  50% {
-    transform: rotate(1.3deg);
+    transform: rotate(var(--sway-to));
   }
 }

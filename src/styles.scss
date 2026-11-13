@@ -27,6 +27,15 @@ body {
   height: 100%;
 }
 
+// mobile: o scroll é controlado por gesto (ver HeroComponent) — sem "puxar pra atualizar"
+// nem efeito elástico competindo com a animação
+@media (max-width: 900px) and (pointer: coarse) {
+  html,
+  body {
+    overscroll-behavior: none;
+  }
+}
+
 body {
   font-family: 'Karla', system-ui, sans-serif;
   color: var(--color-ink);

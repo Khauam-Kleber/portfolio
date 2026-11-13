@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, ElementRef, afterRenderEffect, computed, inject, input } from '@angular/core';
 
 import { LocaleService } from '../../i18n/locale.service';
 import { SECTION_ORDER, type SectionKey } from '../section';
@@ -40,6 +40,19 @@ export class SectionCardComponent {
   protected readonly isDuo = computed(() => this.sectionKey() === 'career');
 
   protected readonly socialLinks = SOCIAL_LINKS;
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  constructor() {
+    // o card é o mesmo elemento entre seções: sem isso, o conteúdo novo aparecia já rolado
+    // até onde o anterior parou, cortando o topo
+    afterRenderEffect(() => {
+      this.sectionKey();
+      this.host.nativeElement
+        .querySelectorAll('.section-card, .section-card__col-inner')
+        .forEach((scrollable) => (scrollable.scrollTop = 0));
+    });
+  }
 
   protected readonly indexLabel = computed(() => {
     const number = SECTION_ORDER.find((section) => section.key === this.sectionKey())?.number ?? 1;

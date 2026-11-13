@@ -22,12 +22,39 @@ const SCRUB_END = TOTAL_FRAMES; // fim do vídeo (~15s), última pétala mapeada
 // dar tempo da animação de pétalas caindo (ligada ao scrollY) ficar visível no trajeto
 const NAV_SCROLL_MS = 1800;
 
+// paginação por gesto no mobile: celular tem scroll com inércia, e um único "flick" cruzava
+// várias seções. Lá o scroll nativo é bloqueado e cada gesto leva, no máximo, à seção vizinha.
+const TOUCH_PAGING_QUERY = '(max-width: 900px) and (pointer: coarse)';
+// fração da altura da tela que o dedo precisa percorrer pra "completar" uma seção
+const SWIPE_FULL_TRAVEL_RATIO = 0.35;
+const SWIPE_COMMIT_PROGRESS = 0.2; // soltando depois disso, avança mesmo sem velocidade
+const SWIPE_COMMIT_VELOCITY = 0.35; // px/ms — flick rápido avança mesmo com pouco arrasto
+const SWIPE_SETTLE_MS = 650;
+const SWIPE_DIRECTION_SLOP = 6; // px de arrasto antes de decidir se o gesto é do card ou da página
+// posição de cada seção como fração do scroll total: a primeira fica no topo (idle da
+// abelha) e a última no fim (todas as pétalas caídas); as do meio, no centro do trecho
+const TOUCH_STOP_PROGRESS: readonly number[] = [0, 0.375, 0.625, 1];
+
 type PlaybackMode = 'intro' | 'idle' | 'scrub';
 
 const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
 
 // ease-in-out-quad
 const easeInOutQuad = (t: number): number => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+
+const easeOutCubic = (t: number): number => 1 - (1 - t) ** 3;
+
+interface SwipeState {
+  startTouchY: number;
+  startTime: number;
+  startScrollY: number;
+  startStop: number;
+  lastTouchY: number;
+  lastTime: number;
+  velocity: number; // px/ms, positivo = dedo subindo (avançar)
+  /** card rolável onde o gesto começou; enquanto não decidido, o gesto ainda pode virar rolagem do card */
+  pendingCard: Element | null;
+}
 
 /**
  * Hero animado: a margarida perde pétalas conforme o scroll, dentro da moldura estilo
@@ -46,7 +73,9 @@ const easeInOutQuad = (t: number): number => (t < 0.5 ? 2 * t * t : 1 - (-2 * t 
     '(window:scroll)': 'onWindowScroll()',
     '(window:resize)': 'onWindowResize()',
     '(window:wheel)': 'cancelNavScroll()',
-    '(window:touchstart)': 'cancelNavScroll()',
+    '(window:touchstart)': 'onTouchStart($event)',
+    '(window:touchend)': 'onTouchEnd()',
+    '(window:touchcancel)': 'onTouchEnd()',
   },
 })
 export class HeroComponent {
@@ -69,8 +98,12 @@ export class HeroComponent {
   private playbackTimer: ReturnType<typeof setInterval> | null = null;
   private scrollTicking = false;
   private navScrollFrame: number | null = null;
+  private swipe: SwipeState | null = null;
+  private settleTargetStop: number | null = null;
 
   constructor() {
+    const destroyRef = inject(DestroyRef);
+
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
       const image = new Image();
       // scroll rápido pode pedir um frame antes dele terminar de carregar; quando
@@ -93,9 +126,15 @@ export class HeroComponent {
       }
       this.resizeCanvas();
       this.startPlaybackTimer();
+
+      // listener manual: o navegador trata touchmove em window como passivo por padrão, e
+      // aqui precisamos de preventDefault pra bloquear o scroll nativo durante o swipe
+      const touchMoveHandler = (event: TouchEvent) => this.onTouchMove(event);
+      window.addEventListener('touchmove', touchMoveHandler, { passive: false });
+      destroyRef.onDestroy(() => window.removeEventListener('touchmove', touchMoveHandler));
     });
 
-    inject(DestroyRef).onDestroy(() => {
+    destroyRef.onDestroy(() => {
       this.stopPlaybackTimer();
       this.cancelNavScroll();
     });
@@ -106,14 +145,159 @@ export class HeroComponent {
   protected goToStep(index: number): void {
     if (index === this.activeStep()) return;
 
-    const scrubHeight = this.scrubSpaceRef()?.nativeElement.offsetHeight ?? 0;
-    const maxScroll = Math.max(scrubHeight - window.innerHeight, 1);
+    const maxScroll = this.maxScroll();
     // meio do trecho da seção (não a borda), pra não cair bem em cima do limite com a
     // seção vizinha por causa de arredondamento
-    const targetProgress = (index + 0.5) / NAV_STEPS;
+    const targetProgress = this.isTouchPaging() ? TOUCH_STOP_PROGRESS[index] : (index + 0.5) / NAV_STEPS;
     const targetY = clamp(maxScroll * targetProgress, 0, maxScroll);
 
     this.animateScrollTo(targetY);
+  }
+
+  protected onTouchStart(event: TouchEvent): void {
+    this.cancelNavScroll();
+    const interruptedTarget = this.settleTargetStop;
+    this.settleTargetStop = null;
+    this.swipe = null;
+    if (!this.isTouchPaging() || event.touches.length !== 1) return;
+
+    const touchY = event.touches[0].clientY;
+    const now = performance.now();
+    this.swipe = {
+      startTouchY: touchY,
+      startTime: now,
+      startScrollY: window.scrollY,
+      // gesto que interrompe uma animação em curso parte da seção pra onde ela ia
+      startStop: interruptedTarget ?? this.nearestStop(window.scrollY),
+      lastTouchY: touchY,
+      lastTime: now,
+      velocity: 0,
+      pendingCard: this.scrollableCardAt(event),
+    };
+  }
+
+  /** O dedo "arrasta" o scroll, mas travado entre a seção de origem e a vizinha na direção
+   *  do gesto — é isso que impede pular várias seções num flick só. */
+  private onTouchMove(event: TouchEvent): void {
+    const swipe = this.swipe;
+    if (!swipe || event.touches.length !== 1) return;
+
+    const touchY = event.touches[0].clientY;
+    const now = performance.now();
+
+    if (swipe.pendingCard) {
+      const dragged = swipe.startTouchY - touchY;
+      if (Math.abs(dragged) < SWIPE_DIRECTION_SLOP) return;
+      if (this.cardCanScroll(swipe.pendingCard, dragged)) {
+        this.swipe = null; // o card ainda tem conteúdo nessa direção: scroll nativo dele
+        return;
+      }
+      // card já no limite: o gesto passa a trocar de seção, contando a partir daqui
+      swipe.pendingCard = null;
+      swipe.startTouchY = touchY;
+      swipe.lastTouchY = touchY;
+      swipe.lastTime = now;
+    }
+    event.preventDefault();
+
+    const elapsed = now - swipe.lastTime;
+    if (elapsed > 0) {
+      // média móvel pra suavizar o ruído de um touchmove isolado
+      swipe.velocity = 0.6 * ((swipe.lastTouchY - touchY) / elapsed) + 0.4 * swipe.velocity;
+    }
+    swipe.lastTouchY = touchY;
+    swipe.lastTime = now;
+
+    window.scrollTo(0, this.swipeScrollY(swipe, this.swipeProgress(swipe, touchY)));
+  }
+
+  protected onTouchEnd(): void {
+    const swipe = this.swipe;
+    this.swipe = null;
+    if (!swipe) return;
+
+    const delta = swipe.startTouchY - swipe.lastTouchY;
+    const direction = Math.sign(delta);
+    const progress = this.swipeProgress(swipe, swipe.lastTouchY);
+    const flicked = Math.abs(swipe.velocity) > SWIPE_COMMIT_VELOCITY && Math.sign(swipe.velocity) === direction;
+    const commits = direction !== 0 && (progress >= SWIPE_COMMIT_PROGRESS || flicked);
+
+    const targetStop = clamp(swipe.startStop + (commits ? direction : 0), 0, TOUCH_STOP_PROGRESS.length - 1);
+    this.settleTargetStop = targetStop;
+    this.settleAt(this.stopY(targetStop));
+  }
+
+  /** 0..1 — quanto do trajeto até a seção vizinha o dedo já completou. */
+  private swipeProgress(swipe: SwipeState, touchY: number): number {
+    const travel = window.innerHeight * SWIPE_FULL_TRAVEL_RATIO;
+    return clamp(Math.abs(swipe.startTouchY - touchY) / travel, 0, 1);
+  }
+
+  private swipeScrollY(swipe: SwipeState, progress: number): number {
+    const direction = Math.sign(swipe.startTouchY - swipe.lastTouchY);
+    const neighbour = clamp(swipe.startStop + direction, 0, TOUCH_STOP_PROGRESS.length - 1);
+    const from = this.stopY(swipe.startStop);
+    return from + (this.stopY(neighbour) - from) * progress;
+  }
+
+  /** Anima até a seção alvo com desaceleração. */
+  private settleAt(targetY: number): void {
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    if (Math.abs(distance) < 1) {
+      this.settleTargetStop = null;
+      return;
+    }
+
+    this.cancelNavScroll();
+    const startTime = performance.now();
+    // distâncias curtas (soltar perto do destino) não precisam da duração toda
+    const duration = SWIPE_SETTLE_MS * clamp(Math.abs(distance) / (this.maxScroll() / NAV_STEPS), 0.4, 1);
+
+    const step = (now: number) => {
+      const t = Math.min((now - startTime) / duration, 1);
+      window.scrollTo(0, startY + distance * easeOutCubic(t));
+      if (t < 1) {
+        this.navScrollFrame = requestAnimationFrame(step);
+      } else {
+        this.navScrollFrame = null;
+        this.settleTargetStop = null;
+      }
+    };
+    this.navScrollFrame = requestAnimationFrame(step);
+  }
+
+  private maxScroll(): number {
+    const scrubHeight = this.scrubSpaceRef()?.nativeElement.offsetHeight ?? 0;
+    return Math.max(scrubHeight - window.innerHeight, 1);
+  }
+
+  private stopY(stop: number): number {
+    return this.maxScroll() * TOUCH_STOP_PROGRESS[stop];
+  }
+
+  private nearestStop(scrollY: number): number {
+    let nearest = 0;
+    TOUCH_STOP_PROGRESS.forEach((_, stop) => {
+      if (Math.abs(this.stopY(stop) - scrollY) < Math.abs(this.stopY(nearest) - scrollY)) nearest = stop;
+    });
+    return nearest;
+  }
+
+  private isTouchPaging(): boolean {
+    return window.matchMedia(TOUCH_PAGING_QUERY).matches;
+  }
+
+  /** O card inferior rola o próprio conteúdo no mobile. */
+  private scrollableCardAt(event: TouchEvent): Element | null {
+    const card = (event.target as Element | null)?.closest('.section-card') ?? null;
+    return card && card.scrollHeight > card.clientHeight ? card : null;
+  }
+
+  /** `dragged` > 0 = dedo subindo = conteúdo do card andando pra baixo. */
+  private cardCanScroll(card: Element, dragged: number): boolean {
+    const maxTop = card.scrollHeight - card.clientHeight;
+    return dragged > 0 ? card.scrollTop < maxTop - 1 : card.scrollTop > 1;
   }
 
   protected cancelNavScroll(): void {
@@ -237,11 +421,9 @@ export class HeroComponent {
   }
 
   private updateScrub(): void {
-    const scrubHeight = this.scrubSpaceRef()?.nativeElement.offsetHeight ?? 0;
     // o navegador nunca deixa rolar além de (altura do documento − altura da viewport);
     // dividir por scrubHeight puro faria o progresso nunca chegar a 1
-    const maxScroll = Math.max(scrubHeight - window.innerHeight, 1);
-    const progress = clamp(window.scrollY / maxScroll, 0, 1);
+    const progress = clamp(window.scrollY / this.maxScroll(), 0, 1);
     this.currentFrame.set(Math.round(IDLE_END + (SCRUB_END - IDLE_END) * progress));
     this.activeStep.set(Math.min(NAV_STEPS - 1, Math.floor(progress * NAV_STEPS)));
   }

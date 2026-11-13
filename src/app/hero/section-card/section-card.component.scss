@@ -206,6 +206,9 @@
   .section-card {
     flex-direction: column;
     overflow-y: auto;
+    // sem isso, ao chegar no fim do card o gesto vazava pro scroll da página (com inércia)
+    // e pulava várias seções de uma vez
+    overscroll-behavior: contain;
   }
 
   .section-card__col {

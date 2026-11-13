@@ -100,7 +100,7 @@
     gap: 6px;
     // menos folga à esquerda (a foto fica coladinha nela) e mais à direita, reservada
     // pra trilha de navegação numerada — não fica centralizada no viewport inteiro
-    padding: 52px 58px calc(var(--hero-card-height) + 6px) 14px;
+    padding: 76px 58px calc(var(--hero-card-height) + 24px) 14px;
     box-sizing: border-box;
   }
 
@@ -121,7 +121,7 @@
     aspect-ratio: 9 / 10;
     // ~20% maior que antes (30vh/148px) nos dois limites do min(), pra crescer de forma
     // consistente tanto em telas altas (limitadas pelo vh) quanto baixas (limitadas pelo calc)
-    height: min(36vh, calc(100vh - var(--hero-card-height) - 108px));
+    height: min(36vh, calc(100vh - var(--hero-card-height) - 156px));
     width: auto;
   }
 

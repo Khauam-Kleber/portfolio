@@ -107,10 +107,10 @@
   .hero-nav::before {
     content: '';
     position: fixed;
-    top: calc(10vh + 17px);
+    top: calc(13vh + 17px);
     right: 33px;
     width: 0;
-    height: 30vh;
+    height: 25.5vh;
     border-left: 1px dashed rgb(58 70 37 / 32%);
     z-index: 5;
   }
@@ -133,11 +133,11 @@
   // --hero-card-height em styles.scss), nunca sobre o painel inferior — e afastados dela
   // (ver .hero-nav::before) pra não colar na borda direita da imagem, agora mais estreita
   .hero-nav__item--top-left {
-    top: 10vh;
+    top: 13vh;
   }
 
   .hero-nav__item--mid-left {
-    top: 20vh;
+    top: 21.5vh;
   }
 
   .hero-nav__item--top-right {
@@ -145,7 +145,7 @@
   }
 
   .hero-nav__item--mid-right {
-    top: 40vh;
+    top: 38.5vh;
   }
 
   .hero-nav__item:hover,
